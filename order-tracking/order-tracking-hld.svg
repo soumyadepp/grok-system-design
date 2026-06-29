@@ -1,0 +1,169 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 820" font-family="monospace">
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#6688aa"/>
+    </marker>
+    <marker id="arr-d" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#445566"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="820" fill="#1b1d2e"/>
+
+  <!-- Title -->
+  <text x="600" y="32" text-anchor="middle" font-size="18" font-weight="bold" fill="#d4ddf0">Order Tracking System — High Level Design (HLD)</text>
+
+  <!-- ── CLIENT LAYER ── -->
+  <text x="22" y="60" font-size="10" fill="#55667a" letter-spacing="2">CLIENT LAYER</text>
+
+  <rect x="40"  y="68" width="150" height="46" rx="6" fill="#0d2035" stroke="#2a6bb0" stroke-width="1.5"/>
+  <text x="115" y="88" text-anchor="middle" font-size="12" font-weight="bold" fill="#5599dd">Customer</text>
+  <text x="115" y="105" text-anchor="middle" font-size="9" fill="#3377aa">place · track · cancel</text>
+
+  <rect x="215" y="68" width="150" height="46" rx="6" fill="#0d2035" stroke="#2a6bb0" stroke-width="1.5"/>
+  <text x="290" y="88" text-anchor="middle" font-size="12" font-weight="bold" fill="#5599dd">Merchant</text>
+  <text x="290" y="105" text-anchor="middle" font-size="9" fill="#3377aa">confirm · prepare</text>
+
+  <rect x="390" y="68" width="150" height="46" rx="6" fill="#0d2035" stroke="#2a6bb0" stroke-width="1.5"/>
+  <text x="465" y="88" text-anchor="middle" font-size="12" font-weight="bold" fill="#5599dd">Delivery Agent</text>
+  <text x="465" y="105" text-anchor="middle" font-size="9" fill="#3377aa">pickup · deliver · retry</text>
+
+  <rect x="565" y="68" width="150" height="46" rx="6" fill="#0d2035" stroke="#2a6bb0" stroke-width="1.5"/>
+  <text x="640" y="88" text-anchor="middle" font-size="12" font-weight="bold" fill="#5599dd">Admin</text>
+  <text x="640" y="105" text-anchor="middle" font-size="9" fill="#3377aa">manage · monitor</text>
+
+  <!-- Clients → API Gateway -->
+  <line x1="115" y1="114" x2="280"  y2="148" stroke="#4466aa" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="290" y1="114" x2="380"  y2="148" stroke="#4466aa" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="465" y1="114" x2="500"  y2="148" stroke="#4466aa" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="640" y1="114" x2="610"  y2="148" stroke="#4466aa" stroke-width="1.2" marker-end="url(#arr)"/>
+
+  <!-- ── API GATEWAY ── -->
+  <rect x="100" y="148" width="700" height="55" rx="8" fill="#1e0f4a" stroke="#6644cc" stroke-width="2"/>
+  <text x="450" y="172" text-anchor="middle" font-size="14" font-weight="bold" fill="#aa88ff">API Gateway / Load Balancer</text>
+  <text x="450" y="191" text-anchor="middle" font-size="9" fill="#7755bb">REST + JSON  ·  Rate Limiting  ·  JWT Auth  ·  TLS termination</text>
+
+  <!-- API Gateway → Core Services -->
+  <line x1="280"  y1="203" x2="190"  y2="238" stroke="#5577bb" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="720"  y1="203" x2="960" y2="238" stroke="#5577bb" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ── CORE SERVICES ── -->
+  <text x="22" y="232" font-size="10" fill="#55667a" letter-spacing="2">CORE SERVICES</text>
+
+  <!-- Order Service -->
+  <rect x="30"  y="238" width="280" height="82" rx="8" fill="#0a2515" stroke="#22994d" stroke-width="2"/>
+  <text x="170" y="260" text-anchor="middle" font-size="13" font-weight="bold" fill="#44dd77">Order Service</text>
+  <text x="170" y="278" text-anchor="middle" font-size="9" fill="#2a9940">place_order()  ·  cancel()</text>
+  <text x="170" y="293" text-anchor="middle" font-size="9" fill="#2a9940">transition()  ·  assign_agent()</text>
+  <text x="170" y="308" text-anchor="middle" font-size="9" fill="#2a9940">get_history()  ·  get_eta()</text>
+
+  <!-- Tracking Service -->
+  <rect x="870"  y="238" width="280" height="82" rx="8" fill="#162908" stroke="#77cc22" stroke-width="2"/>
+  <text x="1010" y="260" text-anchor="middle" font-size="13" font-weight="bold" fill="#99ee44">Tracking Service</text>
+  <text x="1010" y="278" text-anchor="middle" font-size="9" fill="#5a9918">get_status()  ·  get_eta()</text>
+  <text x="1010" y="293" text-anchor="middle" font-size="9" fill="#5a9918">list_by_state()  ·  list_all()</text>
+  <text x="1010" y="308" text-anchor="middle" font-size="9" fill="#5a9918">status read p99 &lt; 50ms</text>
+
+  <!-- Order Service → State Machine -->
+  <line x1="170"  y1="320" x2="170"  y2="355" stroke="#5577bb" stroke-width="1.5" marker-end="url(#arr)"/>
+  <!-- Tracking → Redis Cache -->
+  <line x1="1010" y1="320" x2="1010" y2="355" stroke="#5577bb" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ── STATE MACHINE + CACHE ── -->
+  <!-- State Machine Engine -->
+  <rect x="30"   y="355" width="280" height="76" rx="8" fill="#281200" stroke="#ee8800" stroke-width="2"/>
+  <text x="170"  y="378" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffbb33">State Machine Engine</text>
+  <text x="170"  y="396" text-anchor="middle" font-size="9" fill="#cc9922">validates transitions · runs guards</text>
+  <text x="170"  y="411" text-anchor="middle" font-size="9" fill="#cc9922">9 states · strong consistency</text>
+  <text x="170"  y="426" text-anchor="middle" font-size="9" fill="#cc9922">appends to order_events log</text>
+
+  <!-- Redis Cache -->
+  <rect x="870"  y="355" width="280" height="76" rx="8" fill="#1c1200" stroke="#ddaa00" stroke-width="2"/>
+  <text x="1010" y="378" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffdd44">Redis Cache</text>
+  <text x="1010" y="396" text-anchor="middle" font-size="9" fill="#bb9911">status cache · TTL = 30s</text>
+  <text x="1010" y="411" text-anchor="middle" font-size="9" fill="#bb9911">agent assignment lock (SETNX)</text>
+  <text x="1010" y="426" text-anchor="middle" font-size="9" fill="#bb9911">p99 hit &lt; 5ms · ~95% hit rate</text>
+
+  <!-- State Machine → Event Bus -->
+  <line x1="310"  y1="393" x2="385"  y2="470" stroke="#5577bb" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Redis → PostgreSQL (cache miss, dashed) -->
+  <line x1="1010" y1="431" x2="1010" y2="635" stroke="#445566" stroke-width="1" stroke-dasharray="6,4"/>
+  <line x1="1010" y1="635" x2="290"  y2="635" stroke="#445566" stroke-width="1" stroke-dasharray="6,4"/>
+  <line x1="290"  y1="635" x2="220"  y2="658" stroke="#445566" stroke-width="1" stroke-dasharray="6,4" marker-end="url(#arr-d)"/>
+  <text x="820"   y="628" font-size="9" fill="#445566" font-style="italic">cache miss → PostgreSQL</text>
+
+  <!-- State Machine → PostgreSQL (direct write, dashed) -->
+  <line x1="170"  y1="431" x2="170"  y2="658" stroke="#445566" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#arr-d)"/>
+
+  <!-- ── EVENT BUS ── -->
+  <rect x="340"  y="470" width="520" height="55" rx="8" fill="#22082a" stroke="#cc44aa" stroke-width="2"/>
+  <text x="600"  y="495" text-anchor="middle" font-size="13" font-weight="bold" fill="#ff77dd">Event Bus (Kafka)</text>
+  <text x="600"  y="513" text-anchor="middle" font-size="9" fill="#aa44aa">partitioned by order_id  ·  at-least-once delivery  ·  replayable audit log</text>
+
+  <!-- Event Bus → Supporting Services -->
+  <line x1="430"  y1="525" x2="160"  y2="560" stroke="#5577bb" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="600"  y1="525" x2="600"  y2="560" stroke="#5577bb" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="780"  y1="525" x2="1010" y2="560" stroke="#5577bb" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ── SUPPORTING SERVICES ── -->
+  <text x="22" y="553" font-size="10" fill="#55667a" letter-spacing="2">SUPPORTING SERVICES</text>
+
+  <!-- Notification Service -->
+  <rect x="20"   y="560" width="240" height="66" rx="8" fill="#080f2a" stroke="#3355cc" stroke-width="2"/>
+  <text x="140"  y="582" text-anchor="middle" font-size="12" font-weight="bold" fill="#6688ff">Notification Service</text>
+  <text x="140"  y="600" text-anchor="middle" font-size="9" fill="#4466cc">EMAIL · SMS · PUSH</text>
+  <text x="140"  y="616" text-anchor="middle" font-size="9" fill="#4466cc">fan-out to all actors per event</text>
+
+  <!-- Inventory Service -->
+  <rect x="470"  y="560" width="260" height="66" rx="8" fill="#081808" stroke="#22aa44" stroke-width="2"/>
+  <text x="600"  y="582" text-anchor="middle" font-size="12" font-weight="bold" fill="#44cc66">Inventory Service</text>
+  <text x="600"  y="600" text-anchor="middle" font-size="9" fill="#22994d">check · reserve · release · consume</text>
+  <text x="600"  y="616" text-anchor="middle" font-size="9" fill="#22994d">SELECT FOR UPDATE in production</text>
+
+  <!-- Delivery Agent Service -->
+  <rect x="880"  y="560" width="270" height="66" rx="8" fill="#180828" stroke="#aa33cc" stroke-width="2"/>
+  <text x="1015" y="582" text-anchor="middle" font-size="12" font-weight="bold" fill="#cc66ff">Delivery Agent Svc</text>
+  <text x="1015" y="600" text-anchor="middle" font-size="9" fill="#9933bb">assign · release</text>
+  <text x="1015" y="616" text-anchor="middle" font-size="9" fill="#9933bb">one-active-order constraint</text>
+
+  <!-- Supporting Services → Data Layer (dashed) -->
+  <line x1="140"  y1="626" x2="180"  y2="658" stroke="#445566" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr-d)"/>
+  <line x1="560"  y1="626" x2="360"  y2="658" stroke="#445566" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr-d)"/>
+  <line x1="1015" y1="626" x2="680"  y2="658" stroke="#445566" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr-d)"/>
+
+  <!-- ── DATA LAYER ── -->
+  <text x="22" y="650" font-size="10" fill="#55667a" letter-spacing="2">DATA LAYER</text>
+
+  <!-- PostgreSQL -->
+  <rect x="60"   y="658" width="260" height="58" rx="8" fill="#020f1e" stroke="#0077cc" stroke-width="2"/>
+  <text x="190"  y="682" text-anchor="middle" font-size="13" font-weight="bold" fill="#33aaff">PostgreSQL</text>
+  <text x="190"  y="699" text-anchor="middle" font-size="9" fill="#1a88cc">orders · items · events · agents</text>
+  <text x="190"  y="711" text-anchor="middle" font-size="8" fill="#0f5a88">ACID · primary write store · p99 &lt; 100ms</text>
+
+  <!-- Redis (data store) -->
+  <rect x="450"  y="658" width="260" height="58" rx="8" fill="#180f00" stroke="#cc8800" stroke-width="2"/>
+  <text x="580"  y="682" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffcc33">Redis</text>
+  <text x="580"  y="699" text-anchor="middle" font-size="9" fill="#cc9922">status cache · agent locks</text>
+  <text x="580"  y="711" text-anchor="middle" font-size="8" fill="#aa7700">TTL = 30s · SETNX distributed lock</text>
+
+  <!-- S3 Archive -->
+  <rect x="860"  y="658" width="280" height="58" rx="8" fill="#010e02" stroke="#228833" stroke-width="2"/>
+  <text x="1000" y="682" text-anchor="middle" font-size="13" font-weight="bold" fill="#44bb55">S3 Archive</text>
+  <text x="1000" y="699" text-anchor="middle" font-size="9" fill="#229933">orders older than 90 days</text>
+  <text x="1000" y="711" text-anchor="middle" font-size="8" fill="#116622">Parquet format · queryable via Athena</text>
+
+  <!-- PostgreSQL → S3 archival -->
+  <line x1="320"  y1="684" x2="860"  y2="684" stroke="#334455" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#arr-d)"/>
+  <text x="590"   y="680" text-anchor="middle" font-size="8" fill="#445566">archive orders &gt; 90 days</text>
+
+  <!-- ── LEGEND ── -->
+  <rect x="20" y="748" width="740" height="48" rx="6" fill="#0f1122" stroke="#252840" stroke-width="1"/>
+  <text x="32" y="767" font-size="10" fill="#99aacc" font-weight="bold">LEGEND</text>
+  <line x1="95"  y1="765" x2="145" y2="765" stroke="#6688aa" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="150"  y="769" font-size="9" fill="#8899aa">synchronous call</text>
+  <line x1="270"  y1="765" x2="320" y2="765" stroke="#445566" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#arr-d)"/>
+  <text x="325"  y="769" font-size="9" fill="#8899aa">async / cache miss / archive</text>
+  <text x="32"   y="787" font-size="9" fill="#8899aa">Scale: 83 orders/s avg · 833/s peak  |  Status read p99 &lt; 50ms  |  Placement p99 &lt; 200ms  |  3.6 TB hot storage/90d</text>
+</svg>

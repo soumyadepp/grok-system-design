@@ -1,0 +1,361 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1300 860" font-family="monospace">
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#6688aa"/>
+    </marker>
+    <marker id="arr-g" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#338844"/>
+    </marker>
+    <marker id="arr-r" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#aa3333"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1300" height="860" fill="#1b1d2e"/>
+
+  <!-- Title -->
+  <text x="650" y="30" text-anchor="middle" font-size="18" font-weight="bold" fill="#d4ddf0">Order Tracking System — Low Level Design (LLD)</text>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- LEFT PANEL: Order State Machine (x=0–520)          -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <text x="260" y="54" text-anchor="middle" font-size="13" font-weight="bold" fill="#aabbcc" letter-spacing="1">ORDER STATE MACHINE</text>
+
+  <!-- Vertical separator -->
+  <line x1="540" y1="45" x2="540" y2="840" stroke="#2a3050" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+  <!-- State box helper: happy-path column cx=200, cancel column cx=420 -->
+
+  <!-- PENDING (initial) -->
+  <rect x="120" y="68" width="165" height="44" rx="7" fill="#142a10" stroke="#33cc55" stroke-width="2"/>
+  <text x="202" y="87" text-anchor="middle" font-size="12" font-weight="bold" fill="#55ff77">PENDING</text>
+  <text x="202" y="104" text-anchor="middle" font-size="8" fill="#338844">initial state</text>
+  <!-- START marker -->
+  <circle cx="202" cy="56" r="6" fill="#44dd66"/>
+  <line x1="202" y1="62" x2="202" y2="68" stroke="#44dd66" stroke-width="1.5" marker-end="url(#arr-g)"/>
+
+  <!-- PENDING → CONFIRMED -->
+  <line x1="202" y1="112" x2="202" y2="148" stroke="#6688aa" stroke-width="1.5" marker-end="url(#arr)"/>
+  <!-- guard label -->
+  <text x="210" y="134" font-size="8" fill="#557799" font-style="italic">[guard: inventory check]</text>
+
+  <!-- CONFIRMED -->
+  <rect x="120" y="148" width="165" height="44" rx="7" fill="#1a2a10" stroke="#77cc33" stroke-width="2"/>
+  <text x="202" y="168" text-anchor="middle" font-size="12" font-weight="bold" fill="#99ee44">CONFIRMED</text>
+  <text x="202" y="184" text-anchor="middle" font-size="8" fill="#558822">inventory reserved</text>
+
+  <!-- CONFIRMED → PREPARING -->
+  <line x1="202" y1="192" x2="202" y2="228" stroke="#6688aa" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="210" y="214" font-size="8" fill="#557799" font-style="italic">[guard: merchant active]</text>
+
+  <!-- PREPARING -->
+  <rect x="120" y="228" width="165" height="44" rx="7" fill="#1a2010" stroke="#aacc22" stroke-width="2"/>
+  <text x="202" y="248" text-anchor="middle" font-size="12" font-weight="bold" fill="#ccee44">PREPARING</text>
+  <text x="202" y="264" text-anchor="middle" font-size="8" fill="#778822">merchant is cooking</text>
+
+  <!-- PREPARING → READY_FOR_PICKUP -->
+  <line x1="202" y1="272" x2="202" y2="308" stroke="#6688aa" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- READY_FOR_PICKUP -->
+  <rect x="110" y="308" width="185" height="44" rx="7" fill="#2a1a00" stroke="#ee9900" stroke-width="2"/>
+  <text x="202" y="328" text-anchor="middle" font-size="12" font-weight="bold" fill="#ffbb33">READY_FOR_PICKUP</text>
+  <text x="202" y="344" text-anchor="middle" font-size="8" fill="#bb8822">packed · waiting agent</text>
+
+  <!-- READY_FOR_PICKUP → OUT_FOR_DELIVERY -->
+  <line x1="202" y1="352" x2="202" y2="388" stroke="#6688aa" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="210" y="374" font-size="8" fill="#557799" font-style="italic">[guard: agent assigned]</text>
+
+  <!-- OUT_FOR_DELIVERY -->
+  <rect x="120" y="388" width="165" height="44" rx="7" fill="#2a1500" stroke="#ff8800" stroke-width="2"/>
+  <text x="202" y="408" text-anchor="middle" font-size="11" font-weight="bold" fill="#ffaa33">OUT_FOR_DELIVERY</text>
+  <text x="202" y="424" text-anchor="middle" font-size="8" fill="#cc7722">agent en route</text>
+
+  <!-- OUT_FOR_DELIVERY → DELIVERED (diagonal left-down) -->
+  <line x1="160" y1="432" x2="115" y2="488" stroke="#338844" stroke-width="1.8" marker-end="url(#arr-g)"/>
+
+  <!-- OUT_FOR_DELIVERY → FAILED_DELIVERY (right) -->
+  <line x1="285" y1="410" x2="345" y2="410" stroke="#aa3333" stroke-width="1.5" marker-end="url(#arr-r)"/>
+
+  <!-- DELIVERED (terminal, left) -->
+  <rect x="30"  y="488" width="165" height="44" rx="7" fill="#082015" stroke="#22bb55" stroke-width="2.5"/>
+  <text x="112" y="508" text-anchor="middle" font-size="12" font-weight="bold" fill="#44ee77">DELIVERED</text>
+  <text x="112" y="524" text-anchor="middle" font-size="8" fill="#22994d">terminal · agent released</text>
+  <!-- Terminal marker -->
+  <circle cx="112" cy="545" r="7" fill="none" stroke="#22bb55" stroke-width="2"/>
+  <circle cx="112" cy="545" r="4" fill="#22bb55"/>
+
+  <!-- FAILED_DELIVERY -->
+  <rect x="345" y="388" width="165" height="44" rx="7" fill="#2a0808" stroke="#cc3333" stroke-width="2"/>
+  <text x="427" y="406" text-anchor="middle" font-size="11" font-weight="bold" fill="#ff5555">FAILED_DELIVERY</text>
+  <text x="427" y="422" text-anchor="middle" font-size="8" fill="#aa2222">customer unreachable</text>
+
+  <!-- FAILED_DELIVERY → RETURNED (down) -->
+  <line x1="427" y1="432" x2="427" y2="488" stroke="#aa3333" stroke-width="1.5" marker-end="url(#arr-r)"/>
+
+  <!-- FAILED_DELIVERY → OUT_FOR_DELIVERY (retry, bent back left) -->
+  <path d="M 345 398 L 315 398 L 315 372 L 285 372" fill="none" stroke="#6688aa" stroke-width="1.3" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+  <text x="290" y="362" font-size="8" fill="#6688aa" font-style="italic">retry</text>
+
+  <!-- RETURNED (terminal, right) -->
+  <rect x="345" y="488" width="165" height="44" rx="7" fill="#1a0808" stroke="#993333" stroke-width="2.5"/>
+  <text x="427" y="508" text-anchor="middle" font-size="12" font-weight="bold" fill="#cc4444">RETURNED</text>
+  <text x="427" y="524" text-anchor="middle" font-size="8" fill="#882222">terminal · agent released</text>
+  <!-- Terminal marker -->
+  <circle cx="427" cy="545" r="7" fill="none" stroke="#993333" stroke-width="2"/>
+  <circle cx="427" cy="545" r="4" fill="#993333"/>
+
+  <!-- CANCELLED (terminal, right side) -->
+  <rect x="345" y="208" width="165" height="44" rx="7" fill="#1a0a08" stroke="#aa5522" stroke-width="2.5"/>
+  <text x="427" y="228" text-anchor="middle" font-size="12" font-weight="bold" fill="#dd7733">CANCELLED</text>
+  <text x="427" y="244" text-anchor="middle" font-size="8" fill="#884422">terminal · inv. released</text>
+  <!-- Terminal marker -->
+  <circle cx="427" cy="265" r="7" fill="none" stroke="#aa5522" stroke-width="2"/>
+  <circle cx="427" cy="265" r="4" fill="#aa5522"/>
+
+  <!-- PENDING → CANCELLED -->
+  <line x1="285" y1="88" x2="345" y2="218" stroke="#aa5522" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+  <!-- CONFIRMED → CANCELLED -->
+  <line x1="285" y1="168" x2="345" y2="222" stroke="#aa5522" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+  <!-- PREPARING → CANCELLED -->
+  <line x1="285" y1="248" x2="345" y2="238" stroke="#aa5522" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+
+  <!-- State Machine Legend -->
+  <rect x="20" y="590" width="500" height="115" rx="6" fill="#0f1122" stroke="#252840" stroke-width="1"/>
+  <text x="35" y="610" font-size="10" font-weight="bold" fill="#99aacc">LEGEND</text>
+  <line x1="90" y1="608" x2="130" y2="608" stroke="#6688aa" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="135" y="612" font-size="8" fill="#8899aa">valid transition</text>
+  <line x1="240" y1="608" x2="280" y2="608" stroke="#6688aa" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+  <text x="285" y="612" font-size="8" fill="#8899aa">cancel path</text>
+  <line x1="380" y1="608" x2="420" y2="608" stroke="#6688aa" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+  <text x="425" y="612" font-size="8" fill="#8899aa">retry</text>
+  <line x1="90" y1="625" x2="130" y2="625" stroke="#338844" stroke-width="1.8" marker-end="url(#arr-g)"/>
+  <text x="135" y="629" font-size="8" fill="#8899aa">happy path</text>
+  <line x1="240" y1="625" x2="280" y2="625" stroke="#aa3333" stroke-width="1.5" marker-end="url(#arr-r)"/>
+  <text x="285" y="629" font-size="8" fill="#8899aa">failure path</text>
+  <text x="35" y="646" font-size="8" fill="#7788aa">Guards:</text>
+  <text x="35" y="660" font-size="8" fill="#6677aa">  PENDING→CONFIRMED:        all items have sufficient inventory</text>
+  <text x="35" y="673" font-size="8" fill="#6677aa">  CONFIRMED→PREPARING:      merchant.is_active == True</text>
+  <text x="35" y="686" font-size="8" fill="#6677aa">  READY_FOR_PICKUP→OUT:     order.agent_id is not None</text>
+  <text x="35" y="699" font-size="8" fill="#6677aa">  Terminal states:           DELIVERED · CANCELLED · RETURNED</text>
+
+  <!-- ETA Table -->
+  <rect x="20" y="718" width="500" height="120" rx="6" fill="#0f1122" stroke="#252840" stroke-width="1"/>
+  <text x="35" y="736" font-size="10" font-weight="bold" fill="#99aacc">ETA (SimpleETAStrategy) — includes current state duration</text>
+  <text x="35" y="752" font-size="8" fill="#7788aa">State                  Duration     Cumulative ETA</text>
+  <line x1="35" y1="756" x2="510" y2="756" stroke="#252840" stroke-width="1"/>
+  <text x="35" y="768" font-size="8" fill="#6677aa">PENDING                 2 min        72 min</text>
+  <text x="35" y="781" font-size="8" fill="#6677aa">CONFIRMED               5 min        70 min</text>
+  <text x="35" y="794" font-size="8" fill="#6677aa">PREPARING              25 min        65 min</text>
+  <text x="35" y="807" font-size="8" fill="#6677aa">READY_FOR_PICKUP       10 min        40 min</text>
+  <text x="35" y="820" font-size="8" fill="#6677aa">OUT_FOR_DELIVERY       30 min        30 min</text>
+  <text x="35" y="833" font-size="8" fill="#6677aa">DELIVERED               —             0 min</text>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- RIGHT PANEL: Class Structure (x=555–1290)          -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <text x="920" y="54" text-anchor="middle" font-size="13" font-weight="bold" fill="#aabbcc" letter-spacing="1">CLASS STRUCTURE</text>
+
+  <!-- ── MODELS ── -->
+  <text x="565" y="74" font-size="10" fill="#55667a" letter-spacing="2">MODELS</text>
+
+  <!-- Order -->
+  <rect x="560" y="80" width="185" height="110" rx="7" fill="#0a1525" stroke="#2266aa" stroke-width="1.5"/>
+  <text x="652" y="99"  text-anchor="middle" font-size="11" font-weight="bold" fill="#4488dd">Order</text>
+  <line x1="565" y1="104" x2="740" y2="104" stroke="#2266aa" stroke-width="1"/>
+  <text x="572" y="117" font-size="8" fill="#4477bb">order_id: UUID</text>
+  <text x="572" y="130" font-size="8" fill="#4477bb">customer_id, merchant_id</text>
+  <text x="572" y="143" font-size="8" fill="#4477bb">state: OrderState</text>
+  <text x="572" y="156" font-size="8" fill="#4477bb">items: List[OrderItem]</text>
+  <text x="572" y="169" font-size="8" fill="#4477bb">agent_id: Optional[UUID]</text>
+  <text x="572" y="182" font-size="8" fill="#4477bb">total_amount: float @prop</text>
+
+  <!-- OrderEvent -->
+  <rect x="760" y="80" width="185" height="110" rx="7" fill="#0a1525" stroke="#2266aa" stroke-width="1.5"/>
+  <text x="852" y="99"  text-anchor="middle" font-size="11" font-weight="bold" fill="#4488dd">OrderEvent</text>
+  <line x1="765" y1="104" x2="940" y2="104" stroke="#2266aa" stroke-width="1"/>
+  <text x="772" y="117" font-size="8" fill="#4477bb">event_id, order_id</text>
+  <text x="772" y="130" font-size="8" fill="#4477bb">event_type: str</text>
+  <text x="772" y="143" font-size="8" fill="#4477bb">from_state, to_state</text>
+  <text x="772" y="156" font-size="8" fill="#4477bb">actor_id, actor_type</text>
+  <text x="772" y="169" font-size="8" fill="#4477bb">occurred_at: datetime</text>
+  <text x="772" y="182" font-size="8" fill="#4477bb">reason: Optional[str]</text>
+
+  <!-- DeliveryAgent -->
+  <rect x="960" y="80" width="185" height="110" rx="7" fill="#0a1525" stroke="#2266aa" stroke-width="1.5"/>
+  <text x="1052" y="99"  text-anchor="middle" font-size="11" font-weight="bold" fill="#4488dd">DeliveryAgent</text>
+  <line x1="965" y1="104" x2="1140" y2="104" stroke="#2266aa" stroke-width="1"/>
+  <text x="972" y="117" font-size="8" fill="#4477bb">agent_id: UUID</text>
+  <text x="972" y="130" font-size="8" fill="#4477bb">name, phone</text>
+  <text x="972" y="143" font-size="8" fill="#4477bb">vehicle_type: str</text>
+  <text x="972" y="156" font-size="8" fill="#4477bb">status: AgentStatus</text>
+  <text x="972" y="169" font-size="8" fill="#4477bb">current_order_id: UUID?</text>
+  <text x="972" y="182" font-size="8" fill="#4477bb">AVAILABLE|BUSY|OFFLINE</text>
+
+  <!-- Product -->
+  <rect x="1160" y="80" width="120" height="110" rx="7" fill="#0a1525" stroke="#2266aa" stroke-width="1.5"/>
+  <text x="1220" y="99"  text-anchor="middle" font-size="11" font-weight="bold" fill="#4488dd">Product</text>
+  <line x1="1165" y1="104" x2="1275" y2="104" stroke="#2266aa" stroke-width="1"/>
+  <text x="1172" y="117" font-size="8" fill="#4477bb">product_id</text>
+  <text x="1172" y="130" font-size="8" fill="#4477bb">merchant_id</text>
+  <text x="1172" y="143" font-size="8" fill="#4477bb">unit_price</text>
+  <text x="1172" y="156" font-size="8" fill="#4477bb">available_qty</text>
+  <text x="1172" y="169" font-size="8" fill="#4477bb">reserved_qty</text>
+  <text x="1172" y="182" font-size="8" fill="#4477bb">free_qty @prop</text>
+
+  <!-- ── STATE MACHINE + ETA STRATEGY ── -->
+  <text x="565" y="212" font-size="10" fill="#55667a" letter-spacing="2">STATE MACHINE + STRATEGY</text>
+
+  <!-- OrderStateMachine -->
+  <rect x="560" y="220" width="210" height="95" rx="7" fill="#201000" stroke="#dd8800" stroke-width="1.5"/>
+  <text x="665" y="239" text-anchor="middle" font-size="11" font-weight="bold" fill="#ffaa33">OrderStateMachine</text>
+  <line x1="565" y1="244" x2="765" y2="244" stroke="#dd8800" stroke-width="1"/>
+  <text x="572" y="257" font-size="8" fill="#bb8822">TRANSITIONS: Dict[State,Set[State]]</text>
+  <text x="572" y="270" font-size="8" fill="#bb8822">_guards: Dict[Tuple, Callable]</text>
+  <text x="572" y="283" font-size="8" fill="#bb8822">can_transition(from, to) → bool</text>
+  <text x="572" y="296" font-size="8" fill="#bb8822">transition(order, to, actor) → Event</text>
+  <text x="572" y="309" font-size="8" fill="#bb8822">register_guard(from, to, fn)</text>
+
+  <!-- ETAStrategy -->
+  <rect x="785" y="220" width="185" height="95" rx="7" fill="#0a1a2a" stroke="#3388cc" stroke-width="1.5"/>
+  <text x="877" y="239" text-anchor="middle" font-size="11" font-weight="bold" fill="#55aaee">ETAStrategy (ABC)</text>
+  <line x1="790" y1="244" x2="965" y2="244" stroke="#3388cc" stroke-width="1"/>
+  <text x="797" y="257" font-size="8" fill="#4488bb">calculate(state) → int</text>
+  <text x="797" y="272" font-size="8" fill="#4488bb">↳ SimpleETAStrategy</text>
+  <text x="797" y="287" font-size="8" fill="#4488bb">   sums remaining state</text>
+  <text x="797" y="302" font-size="8" fill="#4488bb">   durations on happy path</text>
+
+  <!-- Enums -->
+  <rect x="985" y="220" width="295" height="95" rx="7" fill="#0f0f20" stroke="#5544aa" stroke-width="1.5"/>
+  <text x="1132" y="239" text-anchor="middle" font-size="11" font-weight="bold" fill="#8877dd">Enums</text>
+  <line x1="990" y1="244" x2="1275" y2="244" stroke="#5544aa" stroke-width="1"/>
+  <text x="997" y="257" font-size="8" fill="#7766cc">OrderState:  PENDING|CONFIRMED|PREPARING</text>
+  <text x="997" y="270" font-size="8" fill="#7766cc">             READY_FOR_PICKUP|OUT_FOR_DELIVERY</text>
+  <text x="997" y="283" font-size="8" fill="#7766cc">             DELIVERED|CANCELLED|FAILED_DELIVERY</text>
+  <text x="997" y="296" font-size="8" fill="#7766cc">             RETURNED</text>
+  <text x="997" y="309" font-size="8" fill="#7766cc">ActorType:  CUSTOMER|MERCHANT|AGENT|ADMIN|SYSTEM</text>
+
+  <!-- ── SERVICES ── -->
+  <text x="565" y="336" font-size="10" fill="#55667a" letter-spacing="2">SERVICES</text>
+
+  <!-- OrderService -->
+  <rect x="560" y="344" width="200" height="140" rx="7" fill="#0a2010" stroke="#22aa55" stroke-width="2"/>
+  <text x="660" y="363" text-anchor="middle" font-size="11" font-weight="bold" fill="#44dd77">OrderService</text>
+  <text x="567" y="376" font-size="8" fill="#338844" font-style="italic">  orchestrates all services</text>
+  <line x1="565" y1="381" x2="755" y2="381" stroke="#22aa55" stroke-width="1"/>
+  <text x="572" y="394" font-size="8" fill="#2a9940">place_order(customer, merchant,</text>
+  <text x="572" y="407" font-size="8" fill="#2a9940">  address, items) → Order</text>
+  <text x="572" y="420" font-size="8" fill="#2a9940">transition(order_id, to_state,</text>
+  <text x="572" y="433" font-size="8" fill="#2a9940">  actor_id, actor_type) → Order</text>
+  <text x="572" y="446" font-size="8" fill="#2a9940">assign_agent(order_id, agent_id)</text>
+  <text x="572" y="459" font-size="8" fill="#2a9940">get_history(customer_id) → List</text>
+  <text x="572" y="472" font-size="8" fill="#2a9940">get_eta(order_id) → int</text>
+
+  <!-- TrackingService -->
+  <rect x="775" y="344" width="185" height="100" rx="7" fill="#0a1f08" stroke="#66bb22" stroke-width="1.5"/>
+  <text x="867" y="363" text-anchor="middle" font-size="11" font-weight="bold" fill="#99ee44">TrackingService</text>
+  <line x1="780" y1="368" x2="955" y2="368" stroke="#66bb22" stroke-width="1"/>
+  <text x="787" y="381" font-size="8" fill="#5a9918">get_status(order_id) → dict</text>
+  <text x="787" y="394" font-size="8" fill="#5a9918">list_by_state(state) → List</text>
+  <text x="787" y="407" font-size="8" fill="#5a9918">list_all() → List</text>
+  <text x="787" y="422" font-size="8" fill="#5a9918">— read-only, no writes —</text>
+  <text x="787" y="437" font-size="8" fill="#5a9918">uses OrderRepo + AgentRepo</text>
+
+  <!-- InventoryService -->
+  <rect x="775" y="458" width="185" height="85" rx="7" fill="#081808" stroke="#22aa44" stroke-width="1.5"/>
+  <text x="867" y="477" text-anchor="middle" font-size="11" font-weight="bold" fill="#44cc66">InventoryService</text>
+  <line x1="780" y1="482" x2="955" y2="482" stroke="#22aa44" stroke-width="1"/>
+  <text x="787" y="495" font-size="8" fill="#22994d">check_and_reserve(items)</text>
+  <text x="787" y="508" font-size="8" fill="#22994d">release(items)</text>
+  <text x="787" y="521" font-size="8" fill="#22994d">consume(items)</text>
+  <text x="787" y="535" font-size="8" fill="#22994d">uses ProductRepository</text>
+
+  <!-- NotificationService -->
+  <rect x="975" y="344" width="185" height="85" rx="7" fill="#080f2a" stroke="#3355cc" stroke-width="1.5"/>
+  <text x="1067" y="363" text-anchor="middle" font-size="11" font-weight="bold" fill="#6688ff">NotificationService</text>
+  <line x1="980" y1="368" x2="1155" y2="368" stroke="#3355cc" stroke-width="1"/>
+  <text x="987" y="381" font-size="8" fill="#4466cc">notify_transition(</text>
+  <text x="987" y="394" font-size="8" fill="#4466cc">  order, event,</text>
+  <text x="987" y="407" font-size="8" fill="#4466cc">  recipients, channel)</text>
+  <text x="987" y="420" font-size="8" fill="#4466cc">_format(order, event) → str</text>
+
+  <!-- DeliveryAgentService -->
+  <rect x="975" y="443" width="185" height="85" rx="7" fill="#180828" stroke="#aa33cc" stroke-width="1.5"/>
+  <text x="1067" y="460" text-anchor="middle" font-size="11" font-weight="bold" fill="#cc66ff">DeliveryAgentSvc</text>
+  <line x1="980" y1="465" x2="1155" y2="465" stroke="#aa33cc" stroke-width="1"/>
+  <text x="987" y="478" font-size="8" fill="#9933bb">assign(order, agent_id)</text>
+  <text x="987" y="491" font-size="8" fill="#9933bb">release(agent_id)</text>
+  <text x="987" y="504" font-size="8" fill="#9933bb">get_available() → List</text>
+  <text x="987" y="519" font-size="8" fill="#9933bb">uses AgentRepository</text>
+
+  <!-- ── REPOSITORIES ── -->
+  <text x="565" y="562" font-size="10" fill="#55667a" letter-spacing="2">REPOSITORIES (in-memory → swap for SQLAlchemy)</text>
+
+  <!-- OrderRepository -->
+  <rect x="560" y="570" width="185" height="100" rx="7" fill="#101825" stroke="#336699" stroke-width="1.5"/>
+  <text x="652" y="589" text-anchor="middle" font-size="11" font-weight="bold" fill="#5599cc">OrderRepository</text>
+  <line x1="565" y1="594" x2="740" y2="594" stroke="#336699" stroke-width="1"/>
+  <text x="572" y="607" font-size="8" fill="#3377aa">save(order)</text>
+  <text x="572" y="620" font-size="8" fill="#3377aa">find(order_id) → Order</text>
+  <text x="572" y="633" font-size="8" fill="#3377aa">events(order_id) → List</text>
+  <text x="572" y="646" font-size="8" fill="#3377aa">by_customer(id) → List</text>
+  <text x="572" y="659" font-size="8" fill="#3377aa">by_state(state) → List</text>
+
+  <!-- ProductRepository -->
+  <rect x="760" y="570" width="185" height="80" rx="7" fill="#101825" stroke="#336699" stroke-width="1.5"/>
+  <text x="852" y="589" text-anchor="middle" font-size="11" font-weight="bold" fill="#5599cc">ProductRepository</text>
+  <line x1="765" y1="594" x2="940" y2="594" stroke="#336699" stroke-width="1"/>
+  <text x="772" y="607" font-size="8" fill="#3377aa">save(product)</text>
+  <text x="772" y="620" font-size="8" fill="#3377aa">find(product_id) → Product</text>
+
+  <!-- AgentRepository -->
+  <rect x="960" y="570" width="185" height="80" rx="7" fill="#101825" stroke="#336699" stroke-width="1.5"/>
+  <text x="1052" y="589" text-anchor="middle" font-size="11" font-weight="bold" fill="#5599cc">AgentRepository</text>
+  <line x1="965" y1="594" x2="1140" y2="594" stroke="#336699" stroke-width="1"/>
+  <text x="972" y="607" font-size="8" fill="#3377aa">save(agent)</text>
+  <text x="972" y="620" font-size="8" fill="#3377aa">find(agent_id) → Agent</text>
+  <text x="972" y="633" font-size="8" fill="#3377aa">available() → List</text>
+
+  <!-- NotificationRepository -->
+  <rect x="1160" y="570" width="120" height="80" rx="7" fill="#101825" stroke="#336699" stroke-width="1.5"/>
+  <text x="1220" y="589" text-anchor="middle" font-size="11" font-weight="bold" fill="#5599cc">NotifRepo</text>
+  <line x1="1165" y1="594" x2="1275" y2="594" stroke="#336699" stroke-width="1"/>
+  <text x="1172" y="607" font-size="8" fill="#3377aa">save(notif)</text>
+  <text x="1172" y="620" font-size="8" fill="#3377aa">by_order(id)</text>
+  <text x="1172" y="633" font-size="8" fill="#3377aa">all() → List</text>
+
+  <!-- ── DEPENDENCY ARROWS ── -->
+  <!-- OrderService → StateMachine -->
+  <line x1="660" y1="344" x2="660" y2="315" stroke="#6688aa" stroke-width="1" marker-end="url(#arr)"/>
+
+  <!-- OrderService → InventoryService -->
+  <line x1="755" y1="430" x2="775" y2="490" stroke="#6688aa" stroke-width="1" marker-end="url(#arr)"/>
+  <!-- OrderService → NotificationService -->
+  <line x1="755" y1="390" x2="975" y2="375" stroke="#6688aa" stroke-width="1" marker-end="url(#arr)"/>
+  <!-- OrderService → DeliveryAgentService -->
+  <line x1="755" y1="440" x2="975" y2="465" stroke="#6688aa" stroke-width="1" marker-end="url(#arr)"/>
+  <!-- OrderService → OrderRepository -->
+  <line x1="650" y1="484" x2="650" y2="570" stroke="#445566" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+  <!-- TrackingService → OrderRepository -->
+  <line x1="820" y1="444" x2="720" y2="570" stroke="#445566" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+  <!-- InventoryService → ProductRepository -->
+  <line x1="852" y1="543" x2="852" y2="570" stroke="#445566" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+  <!-- DeliveryAgentService → AgentRepository -->
+  <line x1="1052" y1="528" x2="1052" y2="570" stroke="#445566" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+  <!-- NotificationService → NotifRepo -->
+  <line x1="1155" y1="400" x2="1220" y2="570" stroke="#445566" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+
+  <!-- DB Schema box (bottom right) -->
+  <rect x="560" y="690" width="720" height="150" rx="6" fill="#0a0f1a" stroke="#253050" stroke-width="1"/>
+  <text x="580" y="708" font-size="10" font-weight="bold" fill="#99aacc">KEY DB SCHEMAS (PostgreSQL)</text>
+  <text x="580" y="724" font-size="8" fill="#6677aa">orders:        order_id PK, customer_id, merchant_id, state, delivery_address JSONB, currency, placed_at, updated_at, agent_id FK</text>
+  <text x="580" y="737" font-size="8" fill="#6677aa">order_items:   item_id PK, order_id FK, product_id, product_name, quantity, unit_price, total_price</text>
+  <text x="580" y="750" font-size="8" fill="#6677aa">order_events:  event_id PK, order_id FK, event_type, from_state, to_state, actor_id, actor_type, reason, occurred_at  (append-only)</text>
+  <text x="580" y="763" font-size="8" fill="#6677aa">delivery_agents: agent_id PK, name, phone, vehicle_type, status, current_order_id FK</text>
+  <text x="580" y="776" font-size="8" fill="#6677aa">products:      product_id PK, merchant_id, name, unit_price, available_qty, reserved_qty</text>
+  <text x="580" y="789" font-size="8" fill="#6677aa">notifications: notification_id PK, order_id FK, recipient_id, channel, message, sent_at, status</text>
+  <line x1="580" y1="795" x2="1270" y2="795" stroke="#253050" stroke-width="1"/>
+  <text x="580" y="807" font-size="8" fill="#556677">Indexes: idx_orders_customer, idx_orders_state, idx_order_events_order_id, idx_order_events_occurred_at, idx_products_merchant</text>
+  <text x="580" y="820" font-size="8" fill="#556677">Constraints: state IN (valid enum values), reserved_qty &lt;= available_qty CHECK, one BUSY agent per order_id</text>
+  <text x="580" y="833" font-size="8" fill="#556677">Archival: rows with placed_at &lt; NOW()-90d moved to S3/Parquet via scheduled job</text>
+</svg>
